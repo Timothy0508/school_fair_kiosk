@@ -5,8 +5,8 @@ import '../models/product.dart';
 class ProductList extends StatelessWidget {
   final List<Product> products;
   final Function(Product) onAddToCart;
-  final Function(Product) onEditProduct; // 編輯商品回呼
-  final Function(Product) onDeleteProduct; // 刪除商品回呼
+  final Function(Product) onEditProduct;
+  final Function(Product) onDeleteProduct;
 
   ProductList({
     required this.products,
@@ -22,22 +22,22 @@ class ProductList extends StatelessWidget {
       itemBuilder: (context, index) {
         final product = products[index];
         return ListTile(
+          leading: Icon(product.category.icon), // 顯示分類 Icon
           title: Text(product.name),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('\$${product.price.toStringAsFixed(2)}'),
               IconButton(
-                icon: Icon(Icons.edit), // 編輯按鈕
+                icon: Icon(Icons.edit),
                 onPressed: () {
-                  onEditProduct(product); // 呼叫編輯商品回呼
+                  onEditProduct(product);
                 },
               ),
               IconButton(
-                icon:
-                    Icon(Icons.delete_forever, color: Colors.redAccent), // 刪除按鈕
+                icon: Icon(Icons.delete_forever, color: Colors.redAccent),
                 onPressed: () {
-                  onDeleteProduct(product); // 呼叫刪除商品回呼
+                  onDeleteProduct(product);
                 },
               ),
               IconButton(
