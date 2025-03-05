@@ -65,31 +65,28 @@ class _CashierScreenState extends State<CashierScreen> {
   }
 
   void _confirmOrder() async {
-    // 將 _confirmOrder 宣告為 async
     if (_cartItems.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('購物車內沒有商品，無法確認訂單。')),
       );
-      return; // 如果購物車為空，直接返回，不執行後續儲存訂單的動作
+      return;
     }
 
-    // 建立訂單物件
     final order = Order(
-      id: DateTime.now().millisecondsSinceEpoch.toString(), // 使用時間戳記作為訂單 ID
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
       dateTime: DateTime.now(),
       products: _cartItems.map((item) => item.product).toList(),
       totalPrice: _totalPrice,
     );
 
-    // 儲存訂單
     final prefs = await SharedPreferences.getInstance();
     final ordersJson = prefs.getString('orders');
     List<dynamic> ordersData = [];
     if (ordersJson != null) {
       ordersData = jsonDecode(ordersJson);
     }
-    ordersData.add(order.toJson()); // 將新訂單 JSON 加入訂單列表
-    await prefs.setString('orders', jsonEncode(ordersData)); // 儲存更新後的訂單列表
+    ordersData.add(order.toJson());
+    await prefs.setString('orders', jsonEncode(ordersData));
 
     print('已確認訂單，總金額：\$${_totalPrice.toStringAsFixed(2)}，訂單編號: ${order.id}');
     _clearCart();
@@ -98,9 +95,12 @@ class _CashierScreenState extends State<CashierScreen> {
     );
   }
 
+  // 新增商品對話框
   _showAddProductDialog(BuildContext context) {
     final _nameController = TextEditingController();
     final _priceController = TextEditingController();
+    ProductCategory _selectedCategory = ProductCategory.drink; // 預設選取飲品分類
+
     return showDialog(
       context: context,
       builder: (context) {
@@ -117,6 +117,23 @@ class _CashierScreenState extends State<CashierScreen> {
                 controller: _priceController,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(labelText: '商品價格'),
+              ),
+              SizedBox(height: 16),
+              DropdownButtonFormField<ProductCategory>(
+                // 分類下拉選單
+                value: _selectedCategory,
+                decoration: InputDecoration(labelText: '商品分類'),
+                items: ProductCategory.values.map((ProductCategory category) {
+                  return DropdownMenuItem<ProductCategory>(
+                    value: category,
+                    child: Text(category.label), // 顯示類別名稱
+                  );
+                }).toList(),
+                onChanged: (ProductCategory? newValue) {
+                  setState(() {
+                    _selectedCategory = newValue!; // 更新選取的分類
+                  });
+                },
               ),
             ],
           ),
@@ -137,7 +154,9 @@ class _CashierScreenState extends State<CashierScreen> {
                     _products.add(Product(
                         id: DateTime.now().millisecondsSinceEpoch.toString(),
                         name: name,
-                        price: price));
+                        price: price,
+                        category: _selectedCategory // 傳遞選取的分類
+                        ));
                     _saveProducts();
                   });
                   Navigator.of(context).pop();
@@ -154,10 +173,13 @@ class _CashierScreenState extends State<CashierScreen> {
     );
   }
 
+  // 編輯商品對話框
   _showEditProductDialog(BuildContext context, Product product) {
     final _nameController = TextEditingController(text: product.name);
     final _priceController =
         TextEditingController(text: product.price.toString());
+    ProductCategory _selectedCategory = product.category; // 預設選取為商品目前的分類
+
     return showDialog(
       context: context,
       builder: (context) {
@@ -174,6 +196,23 @@ class _CashierScreenState extends State<CashierScreen> {
                 controller: _priceController,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(labelText: '商品價格'),
+              ),
+              SizedBox(height: 16),
+              DropdownButtonFormField<ProductCategory>(
+                // 分類下拉選單
+                value: _selectedCategory,
+                decoration: InputDecoration(labelText: '商品分類'),
+                items: ProductCategory.values.map((ProductCategory category) {
+                  return DropdownMenuItem<ProductCategory>(
+                    value: category,
+                    child: Text(category.label), // 顯示類別名稱
+                  );
+                }).toList(),
+                onChanged: (ProductCategory? newValue) {
+                  setState(() {
+                    _selectedCategory = newValue!; // 更新選取的分類
+                  });
+                },
               ),
             ],
           ),
@@ -193,8 +232,12 @@ class _CashierScreenState extends State<CashierScreen> {
                   setState(() {
                     final index = _products.indexOf(product);
                     if (index != -1) {
-                      _products[index] =
-                          Product(id: product.id, name: name, price: price);
+                      _products[index] = Product(
+                          id: product.id,
+                          name: name,
+                          price: price,
+                          category: _selectedCategory // 傳遞選取的分類
+                          );
                       _saveProducts();
                     }
                   });
@@ -212,31 +255,30 @@ class _CashierScreenState extends State<CashierScreen> {
     );
   }
 
-  // 刪除商品
   void _deleteProduct(Product product) {
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
           title: Text('確認刪除商品？'),
-          content: Text('您確定要刪除 ${product.name} 嗎？\n此操作無法復原。'), // 加入警告訊息
+          content: Text('您確定要刪除 ${product.name} 嗎？\n此操作無法復原。'),
           actions: <Widget>[
             TextButton(
               child: Text('取消'),
               onPressed: () {
-                Navigator.of(context).pop(); // 關閉對話框
+                Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text('刪除', style: TextStyle(color: Colors.red)), // 強調刪除按鈕
+              child: Text('刪除', style: TextStyle(color: Colors.red)),
               onPressed: () {
                 setState(() {
                   _products.remove(product);
-                  _saveProducts(); // 儲存商品列表
+                  _saveProducts();
                 });
-                Navigator.of(context).pop(); // 關閉對話框
+                Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${product.name} 已刪除')), // 顯示刪除成功訊息
+                  SnackBar(content: Text('${product.name} 已刪除')),
                 );
               },
             ),
@@ -251,16 +293,13 @@ class _CashierScreenState extends State<CashierScreen> {
     return Scaffold(
       appBar: AppBar(title: Text('收銀機')),
       body: Padding(
-        // 為 body 加入 Padding，避免 Card 貼邊
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
             Expanded(
               child: Card(
-                // 使用 Card 包裹商品列表區域
-                elevation: 2, // 增加陰影效果
+                elevation: 2,
                 child: Padding(
-                  // 為 Card 內容加入 Padding
                   padding: const EdgeInsets.all(8.0),
                   child: Stack(
                     children: [
@@ -304,13 +343,11 @@ class _CashierScreenState extends State<CashierScreen> {
                 ),
               ),
             ),
-            SizedBox(width: 8), // 左右 Card 之间增加间距
+            SizedBox(width: 8),
             Expanded(
               child: Card(
-                // 使用 Card 包裹已選商品區域
-                elevation: 2, // 增加陰影效果
+                elevation: 2,
                 child: Padding(
-                  // 為 Card 內容加入 Padding
                   padding: const EdgeInsets.all(8.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
