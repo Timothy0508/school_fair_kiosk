@@ -1,4 +1,4 @@
-import 'dart:convert'; // 引入 jsonEncode 和 jsonDecode
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -15,7 +15,7 @@ class CashierScreen extends StatefulWidget {
 }
 
 class _CashierScreenState extends State<CashierScreen> {
-  List<Product> _products = []; // 商品列表，一開始為空
+  List<Product> _products = [];
   List<CartItem> _cartItems = [];
 
   double get _totalPrice =>
@@ -24,10 +24,9 @@ class _CashierScreenState extends State<CashierScreen> {
   @override
   void initState() {
     super.initState();
-    _loadProducts(); // 載入商品資料
+    _loadProducts();
   }
 
-  // 載入商品資料
   _loadProducts() async {
     final prefs = await SharedPreferences.getInstance();
     final productsJson = prefs.getString('products');
@@ -39,7 +38,6 @@ class _CashierScreenState extends State<CashierScreen> {
     }
   }
 
-  // 儲存商品資料
   _saveProducts() async {
     final prefs = await SharedPreferences.getInstance();
     final productsJson =
@@ -73,7 +71,6 @@ class _CashierScreenState extends State<CashierScreen> {
     );
   }
 
-  // 新增商品對話框
   _showAddProductDialog(BuildContext context) {
     final _nameController = TextEditingController();
     final _priceController = TextEditingController();
@@ -91,8 +88,7 @@ class _CashierScreenState extends State<CashierScreen> {
               ),
               TextField(
                 controller: _priceController,
-                keyboardType:
-                    TextInputType.numberWithOptions(decimal: true), // 允許小數
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(labelText: '商品價格'),
               ),
             ],
@@ -108,19 +104,17 @@ class _CashierScreenState extends State<CashierScreen> {
               child: Text('確認'),
               onPressed: () {
                 final name = _nameController.text;
-                final price = double.tryParse(_priceController.text) ??
-                    0; // 價格轉換，無效輸入則為 0
+                final price = double.tryParse(_priceController.text) ?? 0;
                 if (name.isNotEmpty && price > 0) {
                   setState(() {
                     _products.add(Product(
                         id: DateTime.now().millisecondsSinceEpoch.toString(),
                         name: name,
-                        price: price)); // 使用時間戳記作為 ID
-                    _saveProducts(); // 儲存商品列表
+                        price: price));
+                    _saveProducts();
                   });
                   Navigator.of(context).pop();
                 } else {
-                  // 可以加入錯誤提示訊息，例如使用 SnackBar
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('商品名稱或價格無效，請重新輸入。')),
                   );
@@ -133,7 +127,6 @@ class _CashierScreenState extends State<CashierScreen> {
     );
   }
 
-  // 編輯商品對話框
   _showEditProductDialog(BuildContext context, Product product) {
     final _nameController = TextEditingController(text: product.name);
     final _priceController =
@@ -152,8 +145,7 @@ class _CashierScreenState extends State<CashierScreen> {
               ),
               TextField(
                 controller: _priceController,
-                keyboardType:
-                    TextInputType.numberWithOptions(decimal: true), // 允許小數
+                keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(labelText: '商品價格'),
               ),
             ],
@@ -169,20 +161,18 @@ class _CashierScreenState extends State<CashierScreen> {
               child: Text('確認'),
               onPressed: () {
                 final name = _nameController.text;
-                final price = double.tryParse(_priceController.text) ??
-                    0; // 價格轉換，無效輸入則為 0
+                final price = double.tryParse(_priceController.text) ?? 0;
                 if (name.isNotEmpty && price > 0) {
                   setState(() {
                     final index = _products.indexOf(product);
                     if (index != -1) {
-                      _products[index] = Product(
-                          id: product.id, name: name, price: price); // 更新商品資訊
-                      _saveProducts(); // 儲存商品列表
+                      _products[index] =
+                          Product(id: product.id, name: name, price: price);
+                      _saveProducts();
                     }
                   });
                   Navigator.of(context).pop();
                 } else {
-                  // 可以加入錯誤提示訊息，例如使用 SnackBar
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(content: Text('商品名稱或價格無效，請重新輸入。')),
                   );
@@ -195,11 +185,10 @@ class _CashierScreenState extends State<CashierScreen> {
     );
   }
 
-  // 刪除商品
   void _deleteProduct(Product product) {
     setState(() {
       _products.remove(product);
-      _saveProducts(); // 儲存商品列表
+      _saveProducts();
     });
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${product.name} 已刪除')),
@@ -210,83 +199,95 @@ class _CashierScreenState extends State<CashierScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('收銀機')),
-      body: Row(
-        children: [
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Stack(
-                // 使用 Stack 來疊加 FloatingActionButton
-                children: [
-                  _products.isEmpty // 判斷商品列表是否為空
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.shopping_cart,
-                                  size: 100, color: Colors.grey),
-                              Text('沒有品項',
-                                  style: TextStyle(
-                                      fontSize: 24, color: Colors.grey)),
-                            ],
+      body: Padding(
+        // 為 body 加入 Padding，避免 Card 貼邊
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          children: [
+            Expanded(
+              child: Card(
+                // 使用 Card 包裹商品列表區域
+                elevation: 2, // 增加陰影效果
+                child: Padding(
+                  // 為 Card 內容加入 Padding
+                  padding: const EdgeInsets.all(8.0),
+                  child: Stack(
+                    children: [
+                      _products.isEmpty
+                          ? Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.shopping_cart,
+                                      size: 100, color: Colors.grey),
+                                  Text('沒有品項',
+                                      style: TextStyle(
+                                          fontSize: 24, color: Colors.grey)),
+                                ],
+                              ),
+                            )
+                          : ProductList(
+                              products: _products,
+                              onAddToCart: _addToCart,
+                              onEditProduct: (product) =>
+                                  _showEditProductDialog(context, product),
+                              onDeleteProduct: _deleteProduct,
+                            ),
+                      Positioned(
+                        bottom: 16.0,
+                        left: 0.0,
+                        right: 0.0,
+                        child: Align(
+                          alignment: Alignment.bottomCenter,
+                          child: FloatingActionButton.extended(
+                            onPressed: () {
+                              _showAddProductDialog(context);
+                            },
+                            icon: Icon(Icons.add),
+                            label: Text('新增商品'),
                           ),
-                        )
-                      : ProductList(
-                          // 如果有商品，顯示商品列表
-                          products: _products,
-                          onAddToCart: _addToCart,
-                          onEditProduct: (product) => _showEditProductDialog(
-                              context, product), // 編輯商品回呼
-                          onDeleteProduct: _deleteProduct, // 刪除商品回呼
                         ),
-                  Positioned(
-                    // 將 FloatingActionButton 定位在列表底部中央
-                    bottom: 16.0,
-                    left: 0.0,
-                    right: 0.0,
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: FloatingActionButton.extended(
-                        onPressed: () {
-                          _showAddProductDialog(context);
-                        },
-                        icon: Icon(Icons.add),
-                        label: Text('新增商品'),
                       ),
-                    ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('已選商品',
-                      style:
-                          TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                  Expanded(
-                    child: CartList(
-                      cartItems: _cartItems,
-                      onRemoveFromCart: _removeFromCart,
-                    ),
+            SizedBox(width: 8), // 左右 Card 之间增加间距
+            Expanded(
+              child: Card(
+                // 使用 Card 包裹已選商品區域
+                elevation: 2, // 增加陰影效果
+                child: Padding(
+                  // 為 Card 內容加入 Padding
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('已選商品',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      Expanded(
+                        child: CartList(
+                          cartItems: _cartItems,
+                          onRemoveFromCart: _removeFromCart,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Text('總金額: \$${_totalPrice.toStringAsFixed(2)}',
+                          style: TextStyle(fontSize: 18)),
+                      SizedBox(height: 20),
+                      ActionButtons(
+                        onClearCart: _clearCart,
+                        onConfirmOrder: _confirmOrder,
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 10),
-                  Text('總金額: \$${_totalPrice.toStringAsFixed(2)}',
-                      style: TextStyle(fontSize: 18)),
-                  SizedBox(height: 20),
-                  ActionButtons(
-                    onClearCart: _clearCart,
-                    onConfirmOrder: _confirmOrder,
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
