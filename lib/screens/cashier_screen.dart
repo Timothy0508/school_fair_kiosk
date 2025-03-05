@@ -212,13 +212,37 @@ class _CashierScreenState extends State<CashierScreen> {
     );
   }
 
+  // 刪除商品
   void _deleteProduct(Product product) {
-    setState(() {
-      _products.remove(product);
-      _saveProducts();
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${product.name} 已刪除')),
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('確認刪除商品？'),
+          content: Text('您確定要刪除 ${product.name} 嗎？\n此操作無法復原。'), // 加入警告訊息
+          actions: <Widget>[
+            TextButton(
+              child: Text('取消'),
+              onPressed: () {
+                Navigator.of(context).pop(); // 關閉對話框
+              },
+            ),
+            TextButton(
+              child: Text('刪除', style: TextStyle(color: Colors.red)), // 強調刪除按鈕
+              onPressed: () {
+                setState(() {
+                  _products.remove(product);
+                  _saveProducts(); // 儲存商品列表
+                });
+                Navigator.of(context).pop(); // 關閉對話框
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('${product.name} 已刪除')), // 顯示刪除成功訊息
+                );
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
