@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/cart_item.dart';
+import '../models/order.dart';
 import '../models/product.dart';
 import '../widgets/action_buttons.dart';
 import '../widgets/cart_list.dart';
@@ -63,8 +64,34 @@ class _CashierScreenState extends State<CashierScreen> {
     });
   }
 
-  void _confirmOrder() {
-    print('已確認訂單，總金額：\$${_totalPrice.toStringAsFixed(2)}');
+  void _confirmOrder() async {
+    // 將 _confirmOrder 宣告為 async
+    if (_cartItems.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('購物車內沒有商品，無法確認訂單。')),
+      );
+      return; // 如果購物車為空，直接返回，不執行後續儲存訂單的動作
+    }
+
+    // 建立訂單物件
+    final order = Order(
+      id: DateTime.now().millisecondsSinceEpoch.toString(), // 使用時間戳記作為訂單 ID
+      dateTime: DateTime.now(),
+      products: _cartItems.map((item) => item.product).toList(),
+      totalPrice: _totalPrice,
+    );
+
+    // 儲存訂單
+    final prefs = await SharedPreferences.getInstance();
+    final ordersJson = prefs.getString('orders');
+    List<dynamic> ordersData = [];
+    if (ordersJson != null) {
+      ordersData = jsonDecode(ordersJson);
+    }
+    ordersData.add(order.toJson()); // 將新訂單 JSON 加入訂單列表
+    await prefs.setString('orders', jsonEncode(ordersData)); // 儲存更新後的訂單列表
+
+    print('已確認訂單，總金額：\$${_totalPrice.toStringAsFixed(2)}，訂單編號: ${order.id}');
     _clearCart();
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('訂單已確認！')),
