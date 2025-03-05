@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: '校園園遊會收銀機',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: MainScreen(), // 使用 MainScreen 作為首頁，整合 NavigationRail
