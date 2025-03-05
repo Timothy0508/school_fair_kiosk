@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../models/cart_item.dart';
+import '../models/product.dart';
 
 class CartList extends StatelessWidget {
   final List<CartItem> cartItems;
@@ -14,6 +16,7 @@ class CartList extends StatelessWidget {
       itemBuilder: (context, index) {
         final cartItem = cartItems[index];
         return ListTile(
+          leading: Icon(cartItem.product.category.icon), // 加入分類 Icon
           title: Text(cartItem.product.name),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
