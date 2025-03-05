@@ -47,24 +47,25 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
       builder: (context) {
         return AlertDialog(
           title: Text('確認刪除訂單？'),
-          content: Text('您確定要刪除訂單編號 ${order.id} 的歷史紀錄嗎？\n此操作無法復原。'),
+          content: Text('您確定要刪除訂單編號 ${order.id} 的歷史紀錄嗎？\n此操作無法復原。'), // 加入警告訊息
           actions: <Widget>[
             TextButton(
               child: Text('取消'),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // 關閉對話框
               },
             ),
             TextButton(
-              child: Text('刪除', style: TextStyle(color: Colors.red)),
+              child: Text('刪除', style: TextStyle(color: Colors.red)), // 強調刪除按鈕
               onPressed: () {
                 setState(() {
                   _orders.remove(order);
-                  _saveOrders();
+                  _saveOrders(); // 儲存訂單歷史紀錄
                 });
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(); // 關閉對話框
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('訂單編號 ${order.id} 歷史紀錄已刪除')),
+                  SnackBar(
+                      content: Text('訂單編號 ${order.id} 歷史紀錄已刪除')), // 顯示刪除成功訊息
                 );
               },
             ),
@@ -87,58 +88,101 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               itemCount: _orders.length,
               itemBuilder: (context, index) {
                 final order = _orders[index];
-                return Card(
-                  // 直接返回 Card，移除 Dismissible
-                  elevation: 2,
-                  margin: EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text('訂單編號: ${order.id}',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
-                            Text(
-                                '時間: ${DateFormat('yyyy-MM-dd HH:mm').format(order.dateTime)}',
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.grey)),
-                            Align(
-                              // 加入 Align 组件，將刪除按鈕靠右對齊
-                              alignment: Alignment.centerRight,
-                              child: IconButton(
-                                // 加入刪除按鈕
-                                icon: Icon(Icons.delete_forever,
-                                    color: Colors.redAccent),
-                                onPressed: () {
-                                  _deleteOrder(order); // 呼叫刪除訂單函數
-                                },
-                              ),
+                return Dismissible(
+                  // 使用 Dismissible 實現側滑刪除 (可選，如果不需要側滑刪除，可以移除 Dismissible)
+                  key: UniqueKey(), // 使用 UniqueKey 確保 Dismissible 的唯一性
+                  direction: DismissDirection.endToStart, // 設定側滑方向為從右到左
+                  background: Container(
+                    // 設定側滑時顯示的背景
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Icon(Icons.delete, color: Colors.white),
+                  ),
+                  confirmDismiss: (direction) async {
+                    // 設定側滑刪除的確認
+                    return await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text("確認刪除訂單？"),
+                          content: const Text("您確定要刪除此筆訂單歷史紀錄嗎？\n此操作無法復原。"),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () => Navigator.of(context)
+                                  .pop(false), // 按取消返回 false
+                              child: const Text("取消"),
+                            ),
+                            TextButton(
+                              onPressed: () =>
+                                  Navigator.of(context).pop(true), // 按確認返回 true
+                              child: const Text("刪除",
+                                  style: TextStyle(color: Colors.red)),
                             ),
                           ],
-                        ),
-                        SizedBox(height: 8),
-                        Text('商品:',
-                            style: TextStyle(
-                                fontSize: 14, fontWeight: FontWeight.bold)),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: order.products
-                              .map((product) => Text('- ${product.name} x 1'))
-                              .toList(),
-                        ),
-                        SizedBox(height: 8),
-                        Align(
-                          alignment: Alignment.bottomRight,
-                          child: Text(
-                              '總金額: \$${order.totalPrice.toStringAsFixed(2)}',
+                        );
+                      },
+                    );
+                  },
+                  onDismissed: (direction) {
+                    // 側滑刪除後的操作
+                    _deleteOrder(order); // 呼叫刪除訂單函數
+                  },
+                  child: Card(
+                    // 直接返回 Card，移除 Dismissible
+                    elevation: 2,
+                    margin:
+                        EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('訂單編號: ${order.id}',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                              Text(
+                                  '時間: ${DateFormat('yyyy-MM-dd HH:mm').format(order.dateTime)}',
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.grey)),
+                              Align(
+                                // 加入 Align 组件，將刪除按鈕靠右對齊
+                                alignment: Alignment.centerRight,
+                                child: IconButton(
+                                  // 加入刪除按鈕
+                                  icon: Icon(Icons.delete_forever,
+                                      color: Colors.redAccent),
+                                  onPressed: () {
+                                    _deleteOrder(order); // 呼叫刪除訂單函數
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                          SizedBox(height: 8),
+                          Text('商品:',
                               style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold)),
-                        ),
-                      ],
+                                  fontSize: 14, fontWeight: FontWeight.bold)),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: order.products
+                                .map((product) => Text('- ${product.name} x 1'))
+                                .toList(),
+                          ),
+                          SizedBox(height: 8),
+                          Align(
+                            alignment: Alignment.bottomRight,
+                            child: Text(
+                                '總金額: \$${order.totalPrice.toStringAsFixed(2)}',
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 );
