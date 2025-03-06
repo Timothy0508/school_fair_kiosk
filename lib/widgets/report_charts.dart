@@ -101,11 +101,15 @@ class CategorySalesBarChart extends StatelessWidget {
 }
 
 class ProductSalesBarChart extends StatelessWidget {
-  final ProductCategory category; // 商品類別
-  final Map<Product, int> productSalesData; // 品項銷售數據
+  final ProductCategory category;
+  // 修改 productSalesData 的 Key 型別為 String (商品 ID)
+  final Map<String, int> productSalesData;
+  final List<Product> products; // 接收商品列表
 
   ProductSalesBarChart(
-      {required this.category, required this.productSalesData});
+      {required this.category,
+      required this.productSalesData,
+      required this.products}); // 修改建構子參數
 
   @override
   Widget build(BuildContext context) {
@@ -115,41 +119,42 @@ class ProductSalesBarChart extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12.0),
           child: Text('${category.label} - 品項銷售統計',
-              style: TextStyle(
-                  fontSize: 18, fontWeight: FontWeight.bold)), // 顯示類別標題
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         ),
         AspectRatio(
-          // 使用 AspectRatio 控制圖表比例
-          aspectRatio: 2, // 調整寬高比以適應品項數量
+          aspectRatio: 2,
           child: BarChart(
             BarChartData(
               alignment: BarChartAlignment.spaceAround,
-              maxY: _getMaxSales() + 2, // 設定 Y 軸最大值，略高於最高銷售量
+              maxY: _getMaxSales() + 2,
               barTouchData: BarTouchData(
-                enabled: false, // 禁用互動效果
+                enabled: false,
               ),
               titlesData: FlTitlesData(
                 show: true,
                 bottomTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
-                    reservedSize: 40, // 預留底部空間，避免標籤重疊
-                    interval: 1, // X 軸標籤間隔
+                    reservedSize: 40,
+                    interval: 1,
                     getTitlesWidget: (double value, TitleMeta meta) {
-                      // 底部 X 軸標籤
                       final productIndex = value.toInt();
                       if (productIndex >= 0 &&
                           productIndex <
                               productSalesData.keys.toList().length) {
+                        final productId = productSalesData.keys
+                            .toList()[productIndex]; // 取得商品 ID
+                        // 根據商品 ID 從 products 列表中找到對應的商品
                         final product =
-                            productSalesData.keys.toList()[productIndex];
+                            products.firstWhere((p) => p.id == productId);
                         return Padding(
                           padding: const EdgeInsets.only(top: 8.0),
+                          // 顯示商品名稱
                           child: Text(product.name,
-                              style: TextStyle(fontSize: 12)), // 顯示品項名稱
+                              style: TextStyle(fontSize: 12)),
                         );
                       } else {
-                        return SizedBox(); // 避免索引超出範圍
+                        return SizedBox();
                       }
                     },
                   ),
@@ -158,28 +163,26 @@ class ProductSalesBarChart extends StatelessWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 28,
-                    interval: 2, // Y 軸間隔
+                    interval: 2,
                   ),
                 ),
-                topTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ), // 隱藏頂部 X 軸標籤
-                rightTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ), // 隱藏右側 Y 軸標籤
+                topTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles:
+                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
               ),
               gridData: FlGridData(
                 show: true,
-                horizontalInterval: 2, // 水平網格線間隔
+                horizontalInterval: 2,
                 getDrawingHorizontalLine: (value) {
                   return FlLine(
-                    color: Colors.grey[300]!, // 網格線顏色
+                    color: Colors.grey[300]!,
                     strokeWidth: 1,
                   );
                 },
               ),
-              borderData: FlBorderData(show: false), // 隱藏邊框
-              barGroups: _generateBarGroups(), // 產生 BarChartGroupData 列表
+              borderData: FlBorderData(show: false),
+              barGroups: _generateBarGroups(),
             ),
           ),
         ),
@@ -187,7 +190,6 @@ class ProductSalesBarChart extends StatelessWidget {
     );
   }
 
-  // 取得最大銷售量，用於設定 Y 軸最大值
   double _getMaxSales() {
     double maxSales = 0;
     productSalesData.values.forEach((sales) {
@@ -198,23 +200,31 @@ class ProductSalesBarChart extends StatelessWidget {
     return maxSales;
   }
 
-  // 產生 BarChartGroupData 列表
+  // 產生 BarChartGroupData 列表 (修改 Key 的型別為 String)
   List<BarChartGroupData> _generateBarGroups() {
     List<BarChartGroupData> barGroups = [];
     productSalesData.entries.toList()
-      ..sort((a, b) => a.key.name.compareTo(b.key.name)); // 依品項名稱排序
+      ..sort((a, b) {
+        // 根據商品名稱排序 (需要從 products 列表中找到 Product 物件)
+        final productA = products.firstWhere((p) => p.id == a.key);
+        final productB = products.firstWhere((p) => p.id == b.key);
+        return productA.name.compareTo(productB.name);
+      });
 
-    productSalesData.forEach((product, sales) {
-      final productIndex =
-          productSalesData.keys.toList().indexOf(product); // 取得品項在 List 中的索引
+    productSalesData.forEach((productId, sales) {
+      // 修改迴圈變數名稱為 productId
+      // 取得品項在 products 列表中的索引 (不再使用索引作為 X 軸座標)
+      // final productIndex = productSalesData.keys.toList().indexOf(productId);
+      //  X 軸座標改用 index，確保類別內的品項順序一致
+      final productIndex = barGroups.length; // 使用 barGroups 的長度作為 index，依序遞增
       barGroups.add(
         BarChartGroupData(
-          x: productIndex, // X 軸座標為品項的 index
+          x: productIndex, // X 軸座標為當前長條的 index (從 0 開始)
           barRods: [
             BarChartRodData(
-              toY: sales.toDouble(), // Y 軸高度為銷售量
-              color: Colors.blueAccent, // 長條顏色
-              width: 16, // 長條寬度 (較 CategorySalesBarChart 窄)
+              toY: sales.toDouble(),
+              color: Colors.blueAccent,
+              width: 16,
             ),
           ],
         ),

@@ -15,31 +15,43 @@ class ReportScreen extends StatefulWidget {
 class _ReportScreenState extends State<ReportScreen> {
   List<Order> _orders = [];
   double _totalSales = 0; // 總銷售額
-  Map<ProductCategory, int> _categorySalesCounts = {}; // 類別銷售數量統計
-  Map<ProductCategory, Map<Product, int>> _productSalesCountsByCategory =
-      {}; // 分類別品項銷售數量統計
+  Map<ProductCategory, int> _categorySalesCounts = {};
+  // 修改品項銷售統計 Map 的 Key 為 String (商品 ID)
+  Map<ProductCategory, Map<String, int>> _productSalesCountsByCategory = {};
+  List<Product> _products = []; // 新增商品列表
 
   @override
   void initState() {
     super.initState();
-    _loadOrdersAndCalculateReports(); // 載入訂單並計算報表資料
+    _loadDataForReports(); // 修改載入資料函數名稱
   }
 
   // 載入訂單歷史紀錄並計算總銷售額
-  _loadOrdersAndCalculateReports() async {
+  // 修改載入資料函數，同時載入訂單和商品列表
+  _loadDataForReports() async {
     final prefs = await SharedPreferences.getInstance();
     final ordersJson = prefs.getString('orders');
+    final productsJson = prefs.getString('products'); // 載入商品列表
+
     if (ordersJson != null) {
       final List<dynamic> ordersData = jsonDecode(ordersJson);
       _orders = ordersData.map((item) => Order.fromJson(item)).toList();
-      _calculateTotalSales(); // 計算總銷售額
-      _calculateCategorySalesCounts(); // 計算類別銷售數量
-      _calculateProductSalesCountsByCategory(); // 計算分類別品項銷售數量
+      _calculateTotalSales();
+      _calculateCategorySalesCounts();
+      _calculateProductSalesCountsByCategory();
     } else {
       _orders = [];
       _totalSales = 0;
       _categorySalesCounts = {};
       _productSalesCountsByCategory = {};
+    }
+
+    if (productsJson != null) {
+      // 載入商品列表
+      final List<dynamic> productsData = jsonDecode(productsJson);
+      _products = productsData.map((item) => Product.fromJson(item)).toList();
+    } else {
+      _products = [];
     }
     setState(() {});
   }
@@ -61,20 +73,46 @@ class _ReportScreenState extends State<ReportScreen> {
     _categorySalesCounts = categoryCounts;
   }
 
-  // 計算分類別品項銷售數量
+  // 計算分類別品項銷售數量 (修改 Key 為商品 ID)
   void _calculateProductSalesCountsByCategory() {
-    Map<ProductCategory, Map<Product, int>> productCountsByCategory = {};
+    Map<ProductCategory, Map<String, int>> productCountsByCategory =
+        {}; // 修改 Map 的 Key 為 String
     for (var order in _orders) {
       for (var product in order.products) {
         final category = product.category;
+        final productId = product.id; // 取得商品 ID 作為 Key
         if (!productCountsByCategory.containsKey(category)) {
-          productCountsByCategory[category] = {}; // 初始化類別的品項銷售 Map
+          productCountsByCategory[category] = {};
         }
-        productCountsByCategory[category]![product] =
-            (productCountsByCategory[category]![product] ?? 0) + 1; // 累加品項銷售數量
+        productCountsByCategory[category]![productId] =
+            (productCountsByCategory[category]![productId] ?? 0) +
+                1; // 使用商品 ID 作為 Key
       }
     }
     _productSalesCountsByCategory = productCountsByCategory;
+  }
+
+  // 建立分類別品項銷售圖表 Widget 列表 (修改傳遞 _products 列表)
+  List<Widget> _buildProductSalesCharts() {
+    List<Widget> charts = [];
+    ProductCategory.values.forEach((category) {
+      if (_productSalesCountsByCategory.containsKey(category)) {
+        charts.add(
+          Card(
+            elevation: 2,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              // 傳遞 _products 列表
+              child: ProductSalesBarChart(
+                  category: category,
+                  productSalesData: _productSalesCountsByCategory[category]!,
+                  products: _products),
+            ),
+          ),
+        );
+      }
+    });
+    return charts;
   }
 
   @override
@@ -137,28 +175,5 @@ class _ReportScreenState extends State<ReportScreen> {
         ),
       ),
     );
-  }
-
-  List<Widget> _buildProductSalesCharts() {
-    List<Widget> charts = [];
-    ProductCategory.values.forEach((category) {
-      // 依序建立每個類別的品項銷售圖表
-      if (_productSalesCountsByCategory.containsKey(category)) {
-        // 檢查是否有該類別的銷售數據
-        charts.add(
-          Card(
-            elevation: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ProductSalesBarChart(
-                  category: category,
-                  productSalesData:
-                      _productSalesCountsByCategory[category]!), // 顯示品項銷售長條圖
-            ),
-          ),
-        );
-      }
-    });
-    return charts;
   }
 }
