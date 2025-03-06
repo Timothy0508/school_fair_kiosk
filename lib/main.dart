@@ -45,8 +45,8 @@ class _MainScreenState extends State<MainScreen> {
             labelType: NavigationRailLabelType.all, // 顯示所有標籤
             destinations: [
               NavigationRailDestination(
-                icon: Icon(Icons.point_of_sale),
-                selectedIcon: Icon(Icons.point_of_sale),
+                icon: Icon(Icons.shopping_basket),
+                selectedIcon: Icon(Icons.shopping_basket),
                 label: Text('收銀機'),
               ),
               NavigationRailDestination(
