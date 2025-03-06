@@ -121,71 +121,74 @@ class ProductSalesBarChart extends StatelessWidget {
           child: Text('${category.label} - 品項銷售統計',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         ),
-        AspectRatio(
-          aspectRatio: 2,
-          child: BarChart(
-            BarChartData(
-              alignment: BarChartAlignment.spaceAround,
-              maxY: _getMaxSales() + 2,
-              barTouchData: BarTouchData(
-                enabled: false,
-              ),
-              titlesData: FlTitlesData(
-                show: true,
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 40,
-                    interval: 1,
-                    getTitlesWidget: (double value, TitleMeta meta) {
-                      final productIndex = value.toInt();
-                      if (productIndex >= 0 &&
-                          productIndex <
-                              productSalesData.keys.toList().length) {
-                        final productId = productSalesData.keys
-                            .toList()[productIndex]; // 取得商品 ID
-                        // 根據商品 ID 從 products 列表中找到對應的商品
-                        final product =
-                            products.firstWhere((p) => p.id == productId);
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 8.0),
-                          // 顯示商品名稱
-                          child: Text(product.name,
-                              style: TextStyle(fontSize: 12)),
-                        );
-                      } else {
-                        return SizedBox();
-                      }
-                    },
-                  ),
+        ConstrainedBox(
+          constraints: BoxConstraints(maxHeight: 300),
+          child: AspectRatio(
+            aspectRatio: 2,
+            child: BarChart(
+              BarChartData(
+                alignment: BarChartAlignment.spaceAround,
+                maxY: _getMaxSales() + 2,
+                barTouchData: BarTouchData(
+                  enabled: false,
                 ),
-                leftTitles: AxisTitles(
-                  sideTitles: SideTitles(
-                    showTitles: true,
-                    reservedSize: 28,
-                    interval: 2,
+                titlesData: FlTitlesData(
+                  show: true,
+                  bottomTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 40,
+                      interval: 1,
+                      getTitlesWidget: (double value, TitleMeta meta) {
+                        final productIndex = value.toInt();
+                        if (productIndex >= 0 &&
+                            productIndex <
+                                productSalesData.keys.toList().length) {
+                          final productId = productSalesData.keys
+                              .toList()[productIndex]; // 取得商品 ID
+                          // 根據商品 ID 從 products 列表中找到對應的商品
+                          final product =
+                              products.firstWhere((p) => p.id == productId);
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            // 顯示商品名稱
+                            child: Text(product.name,
+                                style: TextStyle(fontSize: 12)),
+                          );
+                        } else {
+                          return SizedBox();
+                        }
+                      },
+                    ),
                   ),
+                  leftTitles: AxisTitles(
+                    sideTitles: SideTitles(
+                      showTitles: true,
+                      reservedSize: 28,
+                      interval: 2,
+                    ),
+                  ),
+                  topTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                  rightTitles:
+                      AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 ),
-                topTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                gridData: FlGridData(
+                  show: true,
+                  horizontalInterval: 2,
+                  getDrawingHorizontalLine: (value) {
+                    return FlLine(
+                      color: Colors.grey[300]!,
+                      strokeWidth: 1,
+                    );
+                  },
+                ),
+                borderData: FlBorderData(show: false),
+                barGroups: _generateBarGroups(),
               ),
-              gridData: FlGridData(
-                show: true,
-                horizontalInterval: 2,
-                getDrawingHorizontalLine: (value) {
-                  return FlLine(
-                    color: Colors.grey[300]!,
-                    strokeWidth: 1,
-                  );
-                },
-              ),
-              borderData: FlBorderData(show: false),
-              barGroups: _generateBarGroups(),
             ),
           ),
-        ),
+        )
       ],
     );
   }

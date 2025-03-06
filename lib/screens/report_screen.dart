@@ -102,7 +102,7 @@ class _ReportScreenState extends State<ReportScreen> {
             elevation: 2,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              // 傳遞 _products 列表
+              // 使用 ConstrainedBox 包裹 ProductSalesBarChart，限制最大高度
               child: ProductSalesBarChart(
                   category: category,
                   productSalesData: _productSalesCountsByCategory[category]!,
@@ -150,8 +150,13 @@ class _ReportScreenState extends State<ReportScreen> {
                 elevation: 2,
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: CategorySalesBarChart(
-                      categorySalesData: _categorySalesCounts), // 顯示類別銷售長條圖
+                  // 使用 ConstrainedBox 包裹 CategorySalesBarChart，限制最大高度
+                  child: ConstrainedBox(
+                    constraints:
+                        BoxConstraints(maxHeight: 200), // 設定最大高度為 200 (可依需求調整)
+                    child: CategorySalesBarChart(
+                        categorySalesData: _categorySalesCounts),
+                  ),
                 ),
               ),
               SizedBox(height: 30),
