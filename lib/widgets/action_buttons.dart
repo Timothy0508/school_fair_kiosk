@@ -15,13 +15,11 @@ class ActionButtons extends StatelessWidget {
           onPressed: onClearCart,
           icon: Icon(Icons.delete),
           label: Text('清空'),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
         ),
         ElevatedButton.icon(
           onPressed: onConfirmOrder,
           icon: Icon(Icons.check),
           label: Text('確認'),
-          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
         ),
       ],
     );
