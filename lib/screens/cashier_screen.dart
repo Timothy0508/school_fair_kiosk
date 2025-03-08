@@ -8,6 +8,7 @@ import '../models/order.dart';
 import '../models/product.dart';
 import '../widgets/action_buttons.dart';
 import '../widgets/cart_list.dart';
+import '../widgets/notification_helper.dart';
 import '../widgets/product_list.dart';
 
 class CashierScreen extends StatefulWidget {
@@ -69,14 +70,15 @@ class _CashierScreenState extends State<CashierScreen> {
   void _clearCart() {
     setState(() {
       _cartItems.clear();
+      showPopupNotification(
+          context, '購物車已清空'); // 使用 showPopupNotification 顯示提示訊息
     });
   }
 
   void _confirmOrder() async {
     if (_cartItems.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('購物車內沒有商品，無法確認訂單。')),
-      );
+      showPopupNotification(
+          context, '購物車內沒有商品，無法確認訂單。'); // 使用 showPopupNotification 顯示提示訊息
       return;
     }
 
@@ -95,8 +97,6 @@ class _CashierScreenState extends State<CashierScreen> {
 
       // *** 強制轉換 Product 物件為 JSON 格式 ***
       final productJson = product.toJson();
-      print(
-          '_confirmOrder: 強制轉換 Product 物件為 JSON - Product Name: ${product.name}, JSON: $productJson'); // 除錯訊息
 
       consolidatedProducts.add({
         'product': productJson, // 儲存 Product 物件的 JSON 格式 (確認是 JSON!)
@@ -123,9 +123,7 @@ class _CashierScreenState extends State<CashierScreen> {
 
     print('已確認訂單，總金額：\$${_totalPrice.toStringAsFixed(2)}，訂單編號: ${order.id}');
     _clearCart();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('訂單已確認！')),
-    );
+    showPopupNotification(context, '訂單已確認！'); // 使用 showPopupNotification 顯示提示訊息
   }
 
   // 新增商品對話框
