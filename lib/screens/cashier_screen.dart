@@ -9,6 +9,7 @@ import '../models/product.dart';
 import '../widgets/action_buttons.dart';
 import '../widgets/cart_list.dart';
 import '../widgets/notification_helper.dart';
+import '../widgets/notification_type.dart';
 import '../widgets/product_list.dart';
 
 class CashierScreen extends StatefulWidget {
@@ -67,18 +68,23 @@ class _CashierScreenState extends State<CashierScreen> {
     });
   }
 
-  void _clearCart() {
+  void _clearCart({bool showNotification = true}) {
     setState(() {
       _cartItems.clear();
-      showPopupNotification(
-          context, '購物車已清空'); // 使用 showPopupNotification 顯示提示訊息
     });
+    if (showNotification) {
+      showPopupNotification(
+        context,
+        '購物車已清空',
+        type: NotificationType.warning,
+      );
+    }
   }
 
   void _confirmOrder() async {
     if (_cartItems.isEmpty) {
-      showPopupNotification(
-          context, '購物車內沒有商品，無法確認訂單。'); // 使用 showPopupNotification 顯示提示訊息
+      showPopupNotification(context, '購物車內沒有商品，無法確認訂單。',
+          type: NotificationType.warning); // 使用 showPopupNotification 顯示提示訊息
       return;
     }
 
@@ -122,8 +128,9 @@ class _CashierScreenState extends State<CashierScreen> {
     await prefs.setString('orders', jsonEncode(ordersData));
 
     print('已確認訂單，總金額：\$${_totalPrice.toStringAsFixed(2)}，訂單編號: ${order.id}');
-    _clearCart();
-    showPopupNotification(context, '訂單已確認！'); // 使用 showPopupNotification 顯示提示訊息
+    _clearCart(showNotification: false);
+    showPopupNotification(context, '訂單已確認！',
+        type: NotificationType.success); // 使用 showPopupNotification 顯示提示訊息
   }
 
   // 新增商品對話框
@@ -192,9 +199,8 @@ class _CashierScreenState extends State<CashierScreen> {
                   });
                   Navigator.of(context).pop();
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('商品名稱或價格無效，請重新輸入。')),
-                  );
+                  showPopupNotification(context, '商品名稱或價格無效，請重新輸入。',
+                      type: NotificationType.warning);
                 }
               },
             ),
@@ -308,8 +314,10 @@ class _CashierScreenState extends State<CashierScreen> {
                   _saveProducts();
                 });
                 Navigator.of(context).pop();
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('${product.name} 已刪除')),
+                showPopupNotification(
+                  context,
+                  '${product.name} 已刪除',
+                  type: NotificationType.warning, // 設定為 warning 類型，使用橘色主題
                 );
               },
             ),

@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 
+import 'notification_type.dart';
+
 class PopupNotification extends StatefulWidget {
   final String message;
+  final NotificationType type;
   final VoidCallback? onDismissed; // Add onDismissed callback
 
-  PopupNotification({required this.message, this.onDismissed});
+  PopupNotification(
+      {required this.message,
+      this.type = NotificationType.info,
+      this.onDismissed});
 
   @override
   _PopupNotificationState createState() => _PopupNotificationState();
@@ -44,17 +50,32 @@ class _PopupNotificationState extends State<PopupNotification> {
   @override
   Widget build(BuildContext context) {
     if (!_isVisible) {
-      return SizedBox.shrink(); // 不可見時返回空的 SizedBox
+      return SizedBox.shrink();
+    }
+
+    // 根據提示訊息類型設定背景顏色
+    Color backgroundColor;
+    switch (widget.type) {
+      case NotificationType.success:
+        backgroundColor = Colors.green[200]!; // 成功：綠色
+        break;
+      case NotificationType.warning:
+        backgroundColor = Colors.orange[200]!; // 警告：橘色
+        break;
+      case NotificationType.info:
+      default:
+        backgroundColor = Colors.grey[200]!; // 資訊/預設：灰色
+        break;
     }
 
     return Positioned(
-      top: 60, // 調整垂直位置
-      right: 20, // 調整水平位置
+      top: 60,
+      right: 20,
       child: Material(
-        // 使用 Material 增加陰影和背景
         elevation: 4,
         borderRadius: BorderRadius.circular(8),
-        color: Colors.grey[200], // 設定背景顏色
+        // *** 使用動態背景顏色 ***
+        color: backgroundColor, // 設定動態背景顏色
         child: Container(
           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
           decoration: BoxDecoration(
@@ -69,10 +90,10 @@ class _PopupNotificationState extends State<PopupNotification> {
                 icon: Icon(Icons.close, size: 20),
                 onPressed: () {
                   setState(() {
-                    _isVisible = false; // 點擊關閉按鈕時設定為不可見
+                    _isVisible = false;
                   });
                   Future.delayed(Duration(milliseconds: 300), () {
-                    _dismiss(); // Call dismiss function
+                    _dismiss();
                   });
                 },
               ),
