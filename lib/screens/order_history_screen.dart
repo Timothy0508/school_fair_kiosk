@@ -207,11 +207,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                   fontSize: 14, fontWeight: FontWeight.bold)),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            // 修改商品列表顯示邏輯，加入顯示時合併計數
-                            children: _consolidateOrderProducts(order.products)
-                                .map((item) {
-                              final product =
-                                  item['product'] as Product; // 取得 Product 物件
+                            // 修改商品列表顯示邏輯, 移除 _consolidateOrderProducts 呼叫
+                            children: order.products.map((item) {
+                              final product = Product.fromJson(
+                                  item['product']); // 從 Map 中解析 Product 物件
                               final quantity = item['quantity'] as int; // 取得數量
                               return Text(
                                   '- ${product.name} x $quantity'); // 顯示 品項名稱 x 數量

@@ -16,6 +16,7 @@ class _ReportScreenState extends State<ReportScreen> {
   List<Order> _orders = [];
   double _totalSales = 0; // 總銷售額
   Map<ProductCategory, int> _categorySalesCounts = {};
+
   // 修改品項銷售統計 Map 的 Key 為 String (商品 ID)
   Map<ProductCategory, Map<String, int>> _productSalesCountsByCategory = {};
   List<Product> _products = []; // 新增商品列表
@@ -67,7 +68,7 @@ class _ReportScreenState extends State<ReportScreen> {
     for (var order in _orders) {
       for (var item in order.products) {
         // 迭代 Map 列表
-        final product = item; // 從 Map 中取出 Product 物件
+        final product = item['product'] as Product; // 從 Map 中取出 Product 物件
         categoryCounts[product.category] =
             (categoryCounts[product.category] ?? 0) + 1;
       }
@@ -81,7 +82,7 @@ class _ReportScreenState extends State<ReportScreen> {
     for (var order in _orders) {
       for (var item in order.products) {
         // 迭代 Map 列表
-        final product = item; // 從 Map 中取出 Product 物件
+        final product = item['product'] as Product; // 從 Map 中取出 Product 物件
         final category = product.category;
         final productId = product.id;
         if (!productCountsByCategory.containsKey(category)) {

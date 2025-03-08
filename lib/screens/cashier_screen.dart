@@ -78,12 +78,29 @@ class _CashierScreenState extends State<CashierScreen> {
       return;
     }
 
-    // 建立訂單物件，直接使用 _cartItems 中的 Product 列表
+    // 建立合併品項後的商品列表
+    List<Map<String, dynamic>> consolidatedProducts = [];
+    Map<String, int> productCounts = {}; // 使用 Map 記錄品項 ID 和數量
+
+    for (var cartItem in _cartItems) {
+      final productId = cartItem.product.id;
+      productCounts[productId] = (productCounts[productId] ?? 0) + 1; // 累加品項數量
+    }
+
+    productCounts.forEach((productId, quantity) {
+      final product =
+          _products.firstWhere((p) => p.id == productId); // 根據 ID 找到 Product 物件
+      consolidatedProducts.add({
+        'product': product.toJson(), // 儲存 Product 物件的 JSON 格式
+        'quantity': quantity, // 儲存品項數量
+      });
+    });
+
+    // 建立訂單物件，使用合併後的商品列表 consolidatedProducts
     final order = Order(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       dateTime: DateTime.now(),
-      // 直接使用 _cartItems.map(...).toList() 取得 Product 列表
-      products: _cartItems.map((item) => item.product).toList(),
+      products: consolidatedProducts, // 使用合併後的商品列表
       totalPrice: _totalPrice,
     );
 
