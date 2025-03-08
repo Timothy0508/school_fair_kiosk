@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 
 class PopupNotification extends StatefulWidget {
   final String message;
+  final VoidCallback? onDismissed; // Add onDismissed callback
 
-  PopupNotification({required this.message});
+  PopupNotification({required this.message, this.onDismissed});
 
   @override
   _PopupNotificationState createState() => _PopupNotificationState();
@@ -17,18 +18,27 @@ class _PopupNotificationState extends State<PopupNotification> {
     super.initState();
     // 設定提示訊息顯示一段時間後自動消失 (例如 3 秒)
     Future.delayed(Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _isVisible = false;
-        });
-        // 延遲一點時間再從 Widget 樹中移除，讓動畫更順暢
-        Future.delayed(Duration(milliseconds: 300), () {
-          if (mounted) {
-            Navigator.of(context).pop(); // 移除 OverlayEntry
-          }
-        });
-      }
+      _autoDismiss();
     });
+  }
+
+  void _autoDismiss() {
+    if (mounted) {
+      setState(() {
+        _isVisible = false;
+      });
+      // 延遲移除 OverlayEntry
+      Future.delayed(Duration(milliseconds: 300), () {
+        _dismiss(); // Call dismiss function
+      });
+    }
+  }
+
+  void _dismiss() {
+    // Rename _safeRemoveOverlay to _dismiss, and simplify it
+    if (mounted) {
+      widget.onDismissed?.call(); // Call the onDismissed callback
+    }
   }
 
   @override
@@ -61,11 +71,8 @@ class _PopupNotificationState extends State<PopupNotification> {
                   setState(() {
                     _isVisible = false; // 點擊關閉按鈕時設定為不可見
                   });
-                  // 延遲一點時間再從 Widget 樹中移除，讓動畫更順暢
                   Future.delayed(Duration(milliseconds: 300), () {
-                    if (mounted) {
-                      Navigator.of(context).pop(); // 移除 OverlayEntry
-                    }
+                    _dismiss(); // Call dismiss function
                   });
                 },
               ),
