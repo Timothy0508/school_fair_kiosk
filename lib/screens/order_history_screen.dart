@@ -207,13 +207,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                   fontSize: 14, fontWeight: FontWeight.bold)),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            // 修改商品列表顯示邏輯, 移除 _consolidateOrderProducts 呼叫
+                            // 修改商品列表顯示邏輯，移除多餘的 Product.fromJson 解析
                             children: order.products.map((item) {
-                              final product = Product.fromJson(
-                                  item['product']); // 從 Map 中解析 Product 物件
-                              final quantity = item['quantity'] as int; // 取得數量
-                              return Text(
-                                  '- ${product.name} x $quantity'); // 顯示 品項名稱 x 數量
+                              // *** 直接使用 item['product']，不再使用 Product.fromJson 解析 ***
+                              final product = item['product']
+                                  as Product; // 直接將 item['product'] 強制轉換為 Product 物件
+                              final quantity = item['quantity'] as int;
+                              return Text('- ${product.name} x $quantity');
                             }).toList(),
                           ),
                           SizedBox(height: 8),

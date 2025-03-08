@@ -90,8 +90,14 @@ class _CashierScreenState extends State<CashierScreen> {
     productCounts.forEach((productId, quantity) {
       final product =
           _products.firstWhere((p) => p.id == productId); // 根據 ID 找到 Product 物件
+
+      // *** 強制轉換 Product 物件為 JSON 格式 ***
+      final productJson = product.toJson();
+      print(
+          '_confirmOrder: 強制轉換 Product 物件為 JSON - Product Name: ${product.name}, JSON: $productJson'); // 除錯訊息
+
       consolidatedProducts.add({
-        'product': product.toJson(), // 儲存 Product 物件的 JSON 格式
+        'product': productJson, // 儲存 Product 物件的 JSON 格式 (確認是 JSON!)
         'quantity': quantity, // 儲存品項數量
       });
     });
