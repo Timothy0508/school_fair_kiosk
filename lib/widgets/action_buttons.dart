@@ -4,7 +4,7 @@ class ActionButtons extends StatelessWidget {
   final VoidCallback onClearCart;
   final VoidCallback onConfirmOrder;
 
-  ActionButtons({required this.onClearCart, required this.onConfirmOrder});
+  const ActionButtons({super.key, required this.onClearCart, required this.onConfirmOrder});
 
   @override
   Widget build(BuildContext context) {

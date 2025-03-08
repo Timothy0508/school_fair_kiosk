@@ -7,7 +7,7 @@ class CartList extends StatelessWidget {
   final List<CartItem> cartItems;
   final Function(CartItem) onRemoveFromCart;
 
-  CartList({required this.cartItems, required this.onRemoveFromCart});
+  const CartList({super.key, required this.cartItems, required this.onRemoveFromCart});
 
   @override
   Widget build(BuildContext context) {

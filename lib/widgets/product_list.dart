@@ -8,7 +8,7 @@ class ProductList extends StatelessWidget {
   final Function(Product) onEditProduct;
   final Function(Product) onDeleteProduct;
 
-  ProductList({
+  const ProductList({super.key, 
     required this.products,
     required this.onAddToCart,
     required this.onEditProduct,

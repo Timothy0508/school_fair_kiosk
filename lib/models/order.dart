@@ -15,10 +15,7 @@ class Order {
 
   // 從 JSON 格式的 Map 建立 Order 物件
   factory Order.fromJson(Map<String, dynamic> json) {
-    print('Order.fromJson: JSON 資料為 null!'); // 除錯訊息：JSON 資料為 null
-    if (json == null) {
-      throw ArgumentError.notNull('json, Order.fromJson 接收的 JSON 資料不能為 null');
-    }
+    print('Order.fromJson: JSON 資料為 null!');
 
     List<Map<String, dynamic>> parsedProducts = [];
     if (json['products'] is List) {

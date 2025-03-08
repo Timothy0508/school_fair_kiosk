@@ -6,7 +6,7 @@ import '../models/product.dart';
 class CategorySalesBarChart extends StatelessWidget {
   final Map<ProductCategory, int> categorySalesData; // 類別銷售數據
 
-  CategorySalesBarChart({required this.categorySalesData});
+  const CategorySalesBarChart({super.key, required this.categorySalesData});
 
   @override
   Widget build(BuildContext context) {
@@ -68,11 +68,11 @@ class CategorySalesBarChart extends StatelessWidget {
   // 取得最大銷售量，用於設定 Y 軸最大值
   double _getMaxSales() {
     double maxSales = 0;
-    categorySalesData.values.forEach((sales) {
+    for (var sales in categorySalesData.values) {
       if (sales > maxSales) {
         maxSales = sales.toDouble();
       }
-    });
+    }
     return maxSales;
   }
 
@@ -80,7 +80,7 @@ class CategorySalesBarChart extends StatelessWidget {
   List<BarChartGroupData> _generateBarGroups() {
     List<BarChartGroupData> barGroups = [];
     categorySalesData.entries.toList()
-      ..sort((a, b) => a.key.index.compareTo(b.key.index)); // 依類別順序排序
+      .sort((a, b) => a.key.index.compareTo(b.key.index)); // 依類別順序排序
 
     categorySalesData.forEach((category, sales) {
       barGroups.add(
@@ -106,8 +106,8 @@ class ProductSalesBarChart extends StatelessWidget {
   final Map<String, int> productSalesData;
   final List<Product> products; // 接收商品列表
 
-  ProductSalesBarChart(
-      {required this.category,
+  const ProductSalesBarChart(
+      {super.key, required this.category,
       required this.productSalesData,
       required this.products}); // 修改建構子參數
 
@@ -195,11 +195,11 @@ class ProductSalesBarChart extends StatelessWidget {
 
   double _getMaxSales() {
     double maxSales = 0;
-    productSalesData.values.forEach((sales) {
+    for (var sales in productSalesData.values) {
       if (sales > maxSales) {
         maxSales = sales.toDouble();
       }
-    });
+    }
     return maxSales;
   }
 
@@ -207,7 +207,7 @@ class ProductSalesBarChart extends StatelessWidget {
   List<BarChartGroupData> _generateBarGroups() {
     List<BarChartGroupData> barGroups = [];
     productSalesData.entries.toList()
-      ..sort((a, b) {
+      .sort((a, b) {
         // 根據商品名稱排序 (需要從 products 列表中找到 Product 物件)
         final productA = products.firstWhere((p) => p.id == a.key);
         final productB = products.firstWhere((p) => p.id == b.key);

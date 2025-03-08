@@ -11,13 +11,15 @@ import '../widgets/cart_list.dart';
 import '../widgets/product_list.dart';
 
 class CashierScreen extends StatefulWidget {
+  const CashierScreen({super.key});
+
   @override
   _CashierScreenState createState() => _CashierScreenState();
 }
 
 class _CashierScreenState extends State<CashierScreen> {
   List<Product> _products = [];
-  List<CartItem> _cartItems = [];
+  final List<CartItem> _cartItems = [];
 
   double get _totalPrice =>
       _cartItems.fold(0, (sum, item) => sum + item.product.price);
@@ -128,9 +130,9 @@ class _CashierScreenState extends State<CashierScreen> {
 
   // 新增商品對話框
   _showAddProductDialog(BuildContext context) {
-    final _nameController = TextEditingController();
-    final _priceController = TextEditingController();
-    ProductCategory _selectedCategory = ProductCategory.drink; // 預設選取飲品分類
+    final nameController = TextEditingController();
+    final priceController = TextEditingController();
+    ProductCategory selectedCategory = ProductCategory.drink; // 預設選取飲品分類
 
     return showDialog(
       context: context,
@@ -141,18 +143,18 @@ class _CashierScreenState extends State<CashierScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: _nameController,
+                controller: nameController,
                 decoration: InputDecoration(labelText: '商品名稱'),
               ),
               TextField(
-                controller: _priceController,
+                controller: priceController,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(labelText: '商品價格'),
               ),
               SizedBox(height: 16),
               DropdownButtonFormField<ProductCategory>(
                 // 分類下拉選單
-                value: _selectedCategory,
+                value: selectedCategory,
                 decoration: InputDecoration(labelText: '商品分類'),
                 items: ProductCategory.values.map((ProductCategory category) {
                   return DropdownMenuItem<ProductCategory>(
@@ -162,7 +164,7 @@ class _CashierScreenState extends State<CashierScreen> {
                 }).toList(),
                 onChanged: (ProductCategory? newValue) {
                   setState(() {
-                    _selectedCategory = newValue!; // 更新選取的分類
+                    selectedCategory = newValue!; // 更新選取的分類
                   });
                 },
               ),
@@ -178,15 +180,15 @@ class _CashierScreenState extends State<CashierScreen> {
             TextButton(
               child: Text('確認'),
               onPressed: () {
-                final name = _nameController.text;
-                final price = double.tryParse(_priceController.text) ?? 0;
+                final name = nameController.text;
+                final price = double.tryParse(priceController.text) ?? 0;
                 if (name.isNotEmpty && price > 0) {
                   setState(() {
                     _products.add(Product(
                         id: DateTime.now().millisecondsSinceEpoch.toString(),
                         name: name,
                         price: price,
-                        category: _selectedCategory // 傳遞選取的分類
+                        category: selectedCategory // 傳遞選取的分類
                         ));
                     _saveProducts();
                   });
@@ -206,10 +208,10 @@ class _CashierScreenState extends State<CashierScreen> {
 
   // 編輯商品對話框
   _showEditProductDialog(BuildContext context, Product product) {
-    final _nameController = TextEditingController(text: product.name);
-    final _priceController =
+    final nameController = TextEditingController(text: product.name);
+    final priceController =
         TextEditingController(text: product.price.toString());
-    ProductCategory _selectedCategory = product.category; // 預設選取為商品目前的分類
+    ProductCategory selectedCategory = product.category; // 預設選取為商品目前的分類
 
     return showDialog(
       context: context,
@@ -220,18 +222,18 @@ class _CashierScreenState extends State<CashierScreen> {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
-                controller: _nameController,
+                controller: nameController,
                 decoration: InputDecoration(labelText: '商品名稱'),
               ),
               TextField(
-                controller: _priceController,
+                controller: priceController,
                 keyboardType: TextInputType.numberWithOptions(decimal: true),
                 decoration: InputDecoration(labelText: '商品價格'),
               ),
               SizedBox(height: 16),
               DropdownButtonFormField<ProductCategory>(
                 // 分類下拉選單
-                value: _selectedCategory,
+                value: selectedCategory,
                 decoration: InputDecoration(labelText: '商品分類'),
                 items: ProductCategory.values.map((ProductCategory category) {
                   return DropdownMenuItem<ProductCategory>(
@@ -241,7 +243,7 @@ class _CashierScreenState extends State<CashierScreen> {
                 }).toList(),
                 onChanged: (ProductCategory? newValue) {
                   setState(() {
-                    _selectedCategory = newValue!; // 更新選取的分類
+                    selectedCategory = newValue!; // 更新選取的分類
                   });
                 },
               ),
@@ -257,8 +259,8 @@ class _CashierScreenState extends State<CashierScreen> {
             TextButton(
               child: Text('確認'),
               onPressed: () {
-                final name = _nameController.text;
-                final price = double.tryParse(_priceController.text) ?? 0;
+                final name = nameController.text;
+                final price = double.tryParse(priceController.text) ?? 0;
                 if (name.isNotEmpty && price > 0) {
                   setState(() {
                     final index = _products.indexOf(product);
@@ -267,7 +269,7 @@ class _CashierScreenState extends State<CashierScreen> {
                           id: product.id,
                           name: name,
                           price: price,
-                          category: _selectedCategory // 傳遞選取的分類
+                          category: selectedCategory // 傳遞選取的分類
                           );
                       _saveProducts();
                     }

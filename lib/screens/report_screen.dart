@@ -8,6 +8,8 @@ import '../models/product.dart';
 import '../widgets/report_charts.dart';
 
 class ReportScreen extends StatefulWidget {
+  const ReportScreen({super.key});
+
   @override
   _ReportScreenState createState() => _ReportScreenState();
 }
@@ -98,7 +100,7 @@ class _ReportScreenState extends State<ReportScreen> {
   // 建立分類別品項銷售圖表 Widget 列表 (修改傳遞 _products 列表)
   List<Widget> _buildProductSalesCharts() {
     List<Widget> charts = [];
-    ProductCategory.values.forEach((category) {
+    for (var category in ProductCategory.values) {
       if (_productSalesCountsByCategory.containsKey(category)) {
         charts.add(
           Card(
@@ -113,7 +115,7 @@ class _ReportScreenState extends State<ReportScreen> {
           ),
         );
       }
-    });
+    }
     return charts;
   }
 
