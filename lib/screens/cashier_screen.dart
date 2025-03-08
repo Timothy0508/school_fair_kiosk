@@ -28,6 +28,12 @@ class _CashierScreenState extends State<CashierScreen> {
     _loadProducts();
   }
 
+  //for debug
+  _clearSharedPreferenced() async {
+    final perfs = await SharedPreferences.getInstance();
+    await perfs.clear();
+  }
+
   _loadProducts() async {
     final prefs = await SharedPreferences.getInstance();
     final productsJson = prefs.getString('products');
@@ -72,9 +78,11 @@ class _CashierScreenState extends State<CashierScreen> {
       return;
     }
 
+    // 建立訂單物件，直接使用 _cartItems 中的 Product 列表
     final order = Order(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       dateTime: DateTime.now(),
+      // 直接使用 _cartItems.map(...).toList() 取得 Product 列表
       products: _cartItems.map((item) => item.product).toList(),
       totalPrice: _totalPrice,
     );

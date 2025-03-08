@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/order.dart';
+import '../models/product.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   @override
@@ -13,11 +14,24 @@ class OrderHistoryScreen extends StatefulWidget {
 
 class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   List<Order> _orders = [];
+  List<Product> _products = [];
 
   @override
   void initState() {
     super.initState();
     _loadOrders();
+    _loadProducts();
+  }
+
+  _loadProducts() async {
+    final prefs = await SharedPreferences.getInstance();
+    final productsJson = prefs.getString('products');
+    if (productsJson != null) {
+      final List<dynamic> productsData = jsonDecode(productsJson);
+      setState(() {
+        _products = productsData.map((item) => Product.fromJson(item)).toList();
+      });
+    }
   }
 
   // 載入訂單歷史紀錄
@@ -56,7 +70,8 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               },
             ),
             TextButton(
-              child: Text('刪除', style: TextStyle(color: Colors.red)), // 強調刪除按鈕
+              child: Text('刪除', style: TextStyle(color: Colors.red)),
+              // 強調刪除按鈕
               onPressed: () {
                 setState(() {
                   _orders.remove(order);
@@ -75,6 +90,27 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
     );
   }
 
+  // 合併訂單中的同品項商品並計數
+  List<Map<String, dynamic>> _consolidateOrderProducts(List<Product> products) {
+    List<Map<String, dynamic>> consolidatedProducts = [];
+    Map<String, int> productCounts = {};
+
+    for (var product in products) {
+      final productId = product.id;
+      productCounts[productId] = (productCounts[productId] ?? 0) + 1;
+    }
+
+    productCounts.forEach((productId, quantity) {
+      final product = _products
+          .firstWhere((p) => p.id == productId); // 從 _products 列表中找到 Product 物件
+      consolidatedProducts.add({
+        'product': product,
+        'quantity': quantity,
+      });
+    });
+    return consolidatedProducts;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,8 +126,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                 final order = _orders[index];
                 return Dismissible(
                   // 使用 Dismissible 實現側滑刪除 (可選，如果不需要側滑刪除，可以移除 Dismissible)
-                  key: UniqueKey(), // 使用 UniqueKey 確保 Dismissible 的唯一性
-                  direction: DismissDirection.endToStart, // 設定側滑方向為從右到左
+                  key: UniqueKey(),
+                  // 使用 UniqueKey 確保 Dismissible 的唯一性
+                  direction: DismissDirection.endToStart,
+                  // 設定側滑方向為從右到左
                   background: Container(
                     // 設定側滑時顯示的背景
                     color: Colors.red,
@@ -169,9 +207,15 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                   fontSize: 14, fontWeight: FontWeight.bold)),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: order.products
-                                .map((product) => Text('- ${product.name} x 1'))
-                                .toList(),
+                            // 修改商品列表顯示邏輯，加入顯示時合併計數
+                            children: _consolidateOrderProducts(order.products)
+                                .map((item) {
+                              final product =
+                                  item['product'] as Product; // 取得 Product 物件
+                              final quantity = item['quantity'] as int; // 取得數量
+                              return Text(
+                                  '- ${product.name} x $quantity'); // 顯示 品項名稱 x 數量
+                            }).toList(),
                           ),
                           SizedBox(height: 8),
                           Align(

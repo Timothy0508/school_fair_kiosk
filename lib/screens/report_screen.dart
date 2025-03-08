@@ -61,32 +61,34 @@ class _ReportScreenState extends State<ReportScreen> {
     _totalSales = _orders.fold(0, (sum, order) => sum + order.totalPrice);
   }
 
-  // 計算類別銷售數量
+  // 計算類別銷售數量 (修改商品物件取得方式)
   void _calculateCategorySalesCounts() {
     Map<ProductCategory, int> categoryCounts = {};
     for (var order in _orders) {
-      for (var product in order.products) {
+      for (var item in order.products) {
+        // 迭代 Map 列表
+        final product = item; // 從 Map 中取出 Product 物件
         categoryCounts[product.category] =
-            (categoryCounts[product.category] ?? 0) + 1; // 累加類別銷售數量
+            (categoryCounts[product.category] ?? 0) + 1;
       }
     }
     _categorySalesCounts = categoryCounts;
   }
 
-  // 計算分類別品項銷售數量 (修改 Key 為商品 ID)
+  // 計算分類別品項銷售數量 (修改商品物件取得方式)
   void _calculateProductSalesCountsByCategory() {
-    Map<ProductCategory, Map<String, int>> productCountsByCategory =
-        {}; // 修改 Map 的 Key 為 String
+    Map<ProductCategory, Map<String, int>> productCountsByCategory = {};
     for (var order in _orders) {
-      for (var product in order.products) {
+      for (var item in order.products) {
+        // 迭代 Map 列表
+        final product = item; // 從 Map 中取出 Product 物件
         final category = product.category;
-        final productId = product.id; // 取得商品 ID 作為 Key
+        final productId = product.id;
         if (!productCountsByCategory.containsKey(category)) {
           productCountsByCategory[category] = {};
         }
         productCountsByCategory[category]![productId] =
-            (productCountsByCategory[category]![productId] ?? 0) +
-                1; // 使用商品 ID 作為 Key
+            (productCountsByCategory[category]![productId] ?? 0) + 1;
       }
     }
     _productSalesCountsByCategory = productCountsByCategory;
@@ -102,7 +104,6 @@ class _ReportScreenState extends State<ReportScreen> {
             elevation: 2,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              // 使用 ConstrainedBox 包裹 ProductSalesBarChart，限制最大高度
               child: ProductSalesBarChart(
                   category: category,
                   productSalesData: _productSalesCountsByCategory[category]!,

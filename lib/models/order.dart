@@ -17,10 +17,9 @@ class Order {
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'dateTime': dateTime.toIso8601String(), // 將 DateTime 轉換為 ISO 8601 字串
-      'products': products
-          .map((product) => product.toJson())
-          .toList(), // 將商品列表轉換為 JSON 列表
+      'dateTime': dateTime.toIso8601String(),
+      // 將 products 的 JSON 轉換邏輯還原
+      'products': products.map((product) => product.toJson()).toList(),
       'totalPrice': totalPrice,
     };
   }
@@ -29,10 +28,11 @@ class Order {
   factory Order.fromJson(Map<String, dynamic> json) {
     return Order(
       id: json['id'],
-      dateTime: DateTime.parse(json['dateTime']), // 將 ISO 8601 字串轉換為 DateTime
+      dateTime: DateTime.parse(json['dateTime']),
+      // 將 products 的 JSON 解析邏輯還原
       products: (json['products'] as List<dynamic>)
           .map((item) => Product.fromJson(item as Map<String, dynamic>))
-          .toList(), // 將 JSON 列表轉換為商品列表
+          .toList(),
       totalPrice: json['totalPrice'].toDouble(),
     );
   }
