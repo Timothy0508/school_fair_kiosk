@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/order.dart';
 import '../models/product.dart';
 import '../widgets/notification_helper.dart';
+import '../widgets/notification_type.dart';
 
 class OrderHistoryScreen extends StatefulWidget {
   const OrderHistoryScreen({super.key});
@@ -81,8 +82,9 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                   _saveOrders(); // 儲存訂單歷史紀錄
                 });
                 Navigator.of(context).pop(); // 關閉對話框
-                showPopupNotification(context,
-                    '訂單編號 ${order.id} 歷史紀錄已刪除'); // 使用 showPopupNotification 顯示提示訊息
+                showPopupNotification(context, '訂單編號 ${order.id} 歷史紀錄已刪除',
+                    type: NotificationType
+                        .warning); // 使用 showPopupNotification 顯示提示訊息
               },
             ),
           ],
