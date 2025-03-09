@@ -13,7 +13,9 @@ class ThemeManager {
 
   Future<void> loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
-    final themeIndex = prefs.getInt(_themeKey) ?? 0; // 預設為 System (index 0)
+    // 明確指定預設值為 ThemeMode.system，更健壯
+    final themeIndex =
+        prefs.getInt(_themeKey) ?? ThemeMode.system.index; // 預設為 System
     themeModeNotifier.value = ThemeMode.values[themeIndex];
   }
 
