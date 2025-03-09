@@ -20,6 +20,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.teal),
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
+      darkTheme: ThemeData(
+          colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: Colors.teal, brightness: Brightness.dark),
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          brightness: Brightness.dark),
       home: MainScreen(), // 使用 MainScreen 作為首頁，整合 NavigationRail
     );
   }
