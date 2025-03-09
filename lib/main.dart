@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'screens/cashier_screen.dart';
 import 'screens/order_history_screen.dart';
 import 'screens/report_screen.dart';
+import 'screens/settings_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -63,6 +64,10 @@ class _MainScreenState extends State<MainScreen> {
                 selectedIcon: Icon(Icons.insert_chart),
                 label: Text('報表'),
               ),
+              NavigationRailDestination(
+                icon: Icon(Icons.settings),
+                label: Text('設定'),
+              ),
             ],
           ),
           VerticalDivider(thickness: 1, width: 1), // NavigationRail 和內容區域之間的分隔線
@@ -83,6 +88,9 @@ class _MainScreenState extends State<MainScreen> {
         return OrderHistoryScreen(); // 訂單歷史紀錄頁面
       case 2:
         return ReportScreen(); // 資料統計報表頁面
+      case 3:
+        return SettingsScreen(); // 設定頁面
+        break;
       default:
         return CashierScreen(); // 預設顯示收銀機頁面
     }
