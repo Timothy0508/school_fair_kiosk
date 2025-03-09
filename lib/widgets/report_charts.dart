@@ -79,8 +79,9 @@ class CategorySalesBarChart extends StatelessWidget {
   // 產生 BarChartGroupData 列表
   List<BarChartGroupData> _generateBarGroups() {
     List<BarChartGroupData> barGroups = [];
-    categorySalesData.entries.toList()
-      .sort((a, b) => a.key.index.compareTo(b.key.index)); // 依類別順序排序
+    categorySalesData.entries
+        .toList()
+        .sort((a, b) => a.key.index.compareTo(b.key.index)); // 依類別順序排序
 
     categorySalesData.forEach((category, sales) {
       barGroups.add(
@@ -107,7 +108,8 @@ class ProductSalesBarChart extends StatelessWidget {
   final List<Product> products; // 接收商品列表
 
   const ProductSalesBarChart(
-      {super.key, required this.category,
+      {super.key,
+      required this.category,
       required this.productSalesData,
       required this.products}); // 修改建構子參數
 
@@ -140,24 +142,78 @@ class ProductSalesBarChart extends StatelessWidget {
                       reservedSize: 40,
                       interval: 1,
                       getTitlesWidget: (double value, TitleMeta meta) {
-                        final productIndex = value.toInt();
-                        if (productIndex >= 0 &&
-                            productIndex <
-                                productSalesData.keys.toList().length) {
-                          final productId = productSalesData.keys
-                              .toList()[productIndex]; // 取得商品 ID
-                          // 根據商品 ID 從 products 列表中找到對應的商品
-                          final product =
-                              products.firstWhere((p) => p.id == productId);
-                          return Padding(
-                            padding: const EdgeInsets.only(top: 8.0),
-                            // 顯示商品名稱
-                            child: Text(product.name,
-                                style: TextStyle(fontSize: 12)),
-                          );
+                        final style = TextStyle(
+                          color: Colors.black54,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                        );
+                        Widget textWidget;
+                        // 檢查 _products 列表是否為空，避免空列表時 firstWhere 錯誤
+                        if (products.isEmpty) {
+                          textWidget = const Text('N/A'); // 空列表時顯示 "N/A"
                         } else {
-                          return SizedBox();
+                          switch (value.toInt()) {
+                            case 0:
+                              textWidget = Text(
+                                products
+                                    .firstWhere(
+                                        (product) =>
+                                            product.category ==
+                                            ProductCategory.drink,
+                                        orElse: () => Product(
+                                            // 使用 orElse 提供預設 Product
+                                            id: 'default_drink',
+                                            name: 'N/A', // 找不到時顯示 "N/A"
+                                            price: 0,
+                                            category: ProductCategory.drink))
+                                    .name,
+                                style: style,
+                              );
+                              break;
+                            case 1:
+                              textWidget = Text(
+                                products
+                                    .firstWhere(
+                                        (product) =>
+                                            product.category ==
+                                            ProductCategory.food,
+                                        orElse: () => Product(
+                                            // 使用 orElse 提供預設 Product
+                                            id: 'default_food',
+                                            name: 'N/A', // 找不到時顯示 "N/A"
+                                            price: 0,
+                                            category: ProductCategory.food))
+                                    .name,
+                                style: style,
+                              );
+                              break;
+                            case 2:
+                              textWidget = Text(
+                                products
+                                    .firstWhere(
+                                        (product) =>
+                                            product.category ==
+                                            ProductCategory.ice,
+                                        orElse: () => Product(
+                                            // 使用 orElse 提供預設 Product
+                                            id: 'default_ice',
+                                            name: 'N/A', // 找不到時顯示 "N/A"
+                                            price: 0,
+                                            category: ProductCategory.ice))
+                                    .name,
+                                style: style,
+                              );
+                              break;
+                            default:
+                              textWidget = const Text('');
+                              break;
+                          }
                         }
+                        return SideTitleWidget(
+                          meta: meta,
+                          space: 10,
+                          child: textWidget,
+                        );
                       },
                     ),
                   ),
@@ -206,13 +262,12 @@ class ProductSalesBarChart extends StatelessWidget {
   // 產生 BarChartGroupData 列表 (修改 Key 的型別為 String)
   List<BarChartGroupData> _generateBarGroups() {
     List<BarChartGroupData> barGroups = [];
-    productSalesData.entries.toList()
-      .sort((a, b) {
-        // 根據商品名稱排序 (需要從 products 列表中找到 Product 物件)
-        final productA = products.firstWhere((p) => p.id == a.key);
-        final productB = products.firstWhere((p) => p.id == b.key);
-        return productA.name.compareTo(productB.name);
-      });
+    productSalesData.entries.toList().sort((a, b) {
+      // 根據商品名稱排序 (需要從 products 列表中找到 Product 物件)
+      final productA = products.firstWhere((p) => p.id == a.key);
+      final productB = products.firstWhere((p) => p.id == b.key);
+      return productA.name.compareTo(productB.name);
+    });
 
     productSalesData.forEach((productId, sales) {
       // 修改迴圈變數名稱為 productId
