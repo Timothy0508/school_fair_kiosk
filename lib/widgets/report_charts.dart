@@ -143,7 +143,6 @@ class ProductSalesBarChart extends StatelessWidget {
                       interval: 1,
                       getTitlesWidget: (double value, TitleMeta meta) {
                         final style = TextStyle(
-                          color: Colors.black54,
                           fontWeight: FontWeight.bold,
                           fontSize: 14,
                         );
