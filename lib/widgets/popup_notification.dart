@@ -60,10 +60,9 @@ class _PopupNotificationState extends State<PopupNotification> {
         backgroundColor = Colors.green[200]!; // 成功：綠色
         break;
       case NotificationType.warning:
-        backgroundColor = Colors.orange[200]!; // 警告：橘色
+        backgroundColor = Theme.of(context).colorScheme.error;
         break;
       case NotificationType.info:
-      default:
         backgroundColor = Colors.grey[200]!; // 資訊/預設：灰色
         break;
     }
