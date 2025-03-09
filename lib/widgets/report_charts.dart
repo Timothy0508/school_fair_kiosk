@@ -90,7 +90,6 @@ class CategorySalesBarChart extends StatelessWidget {
           barRods: [
             BarChartRodData(
               toY: sales.toDouble(), // Y 軸高度為銷售量
-              color: Colors.blueAccent, // 長條顏色
               width: 22, // 長條寬度
             ),
           ],
@@ -280,7 +279,6 @@ class ProductSalesBarChart extends StatelessWidget {
           barRods: [
             BarChartRodData(
               toY: sales.toDouble(),
-              color: Colors.blueAccent,
               width: 16,
             ),
           ],

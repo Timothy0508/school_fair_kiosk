@@ -170,14 +170,6 @@ class _ReportScreenState extends State<ReportScreen> {
                       fontSize: 24, fontWeight: FontWeight.bold)), // 品項銷售統計標題
               SizedBox(height: 10),
               ..._buildProductSalesCharts(), // 顯示分類別品項銷售長條圖
-              SizedBox(height: 30),
-
-              Text('** 其他統計報表功能 (未來擴充) **',
-                  style: TextStyle(fontSize: 16, color: Colors.grey)),
-              Text('- 熱銷商品排行榜',
-                  style: TextStyle(fontSize: 16, color: Colors.grey)),
-              Text('- 每日/每周/每月銷售額統計',
-                  style: TextStyle(fontSize: 16, color: Colors.grey)),
               // ...
             ],
           ),
