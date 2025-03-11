@@ -152,6 +152,7 @@ class ProductSalesBarChart extends StatelessWidget {
                         } else {
                           switch (value.toInt()) {
                             case 0:
+                              print('drink, $value');
                               textWidget = Text(
                                 products
                                     .firstWhere(
@@ -169,6 +170,7 @@ class ProductSalesBarChart extends StatelessWidget {
                               );
                               break;
                             case 1:
+                              print('food, $value');
                               textWidget = Text(
                                 products
                                     .firstWhere(
@@ -186,6 +188,7 @@ class ProductSalesBarChart extends StatelessWidget {
                               );
                               break;
                             case 2:
+                              print('ice $value');
                               textWidget = Text(
                                 products
                                     .firstWhere(
