@@ -69,7 +69,6 @@ class _MainScreenState extends State<MainScreen> {
         return ReportScreen(); // 資料統計報表頁面
       case 3:
         return SettingsScreen(); // 設定頁面
-        break;
       default:
         return CashierScreen(); // 預設顯示收銀機頁面
     }
