@@ -97,28 +97,6 @@ class _ReportScreenState extends State<ReportScreen> {
     _productSalesCountsByCategory = productCountsByCategory;
   }
 
-  // 建立分類別品項銷售圖表 Widget 列表 (修改傳遞 _products 列表)
-  List<Widget> _buildProductSalesCharts() {
-    List<Widget> charts = [];
-    for (var category in ProductCategory.values) {
-      if (_productSalesCountsByCategory.containsKey(category)) {
-        charts.add(
-          Card(
-            elevation: 2,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ProductSalesBarChart(
-                  category: category,
-                  productSalesData: _productSalesCountsByCategory[category]!,
-                  products: _products),
-            ),
-          ),
-        );
-      }
-    }
-    return charts;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -163,13 +141,6 @@ class _ReportScreenState extends State<ReportScreen> {
                   ),
                 ),
               ),
-              SizedBox(height: 30),
-
-              Text('各品項銷售統計 (分類別)',
-                  style: TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold)), // 品項銷售統計標題
-              SizedBox(height: 10),
-              ..._buildProductSalesCharts(), // 顯示分類別品項銷售長條圖
               // ...
             ],
           ),
