@@ -30,11 +30,12 @@ class _CustomerNumberDialogState extends State<CustomerNumberDialog> {
       content: numberInput,
       actions: [
         FilledButton(
-            onPressed: () => Navigator.pop(
-                  context,
-                  int.tryParse(_numberController.text),
-                ),
-            child: Text('Confirm'))
+          onPressed: () => Navigator.pop(
+            context,
+            int.tryParse(_numberController.text),
+          ),
+          child: Text('Confirm'),
+        )
       ],
     );
     return dialog;
