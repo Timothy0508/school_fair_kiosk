@@ -1,0 +1,28 @@
+name: school-fair-kiosk
+version: 1.0.3
+summary: School Fair Kiosk
+description: The app for cashiers to use at the school fair
+
+confinement: strict
+base: core22
+grade: stable
+
+slots:
+  dbus-school-fair-kiosk: # adjust accordingly to your app name
+    interface: dbus
+    bus: session
+    name: dev.deli.school-fair-kiosk # adjust accordingly to your app name and
+    
+apps:
+  school-fair-kiosk:
+    command: school_fair_kiosk
+    extensions: [gnome] # gnome includes the libraries required by flutter
+    plugs:
+    - network
+    slots:
+      - dbus-school-fair-kiosk
+parts:
+  school-fair-kiosk:
+    source: .
+    plugin: flutter
+    flutter-target: lib/main.dart # The main entry-point file of the application
