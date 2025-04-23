@@ -5,12 +5,14 @@ class Order {
   final DateTime dateTime;
   final List<Map<String, dynamic>> products;
   final double totalPrice;
+  final int customerNumber;
 
   Order({
     required this.id,
     required this.dateTime,
     required this.products,
     required this.totalPrice,
+    this.customerNumber = 0,
   });
 
   // 從 JSON 格式的 Map 建立 Order 物件
@@ -50,6 +52,7 @@ class Order {
           : DateTime.now(),
       products: parsedProducts,
       totalPrice: (json['totalPrice'] as num?)?.toDouble() ?? 0.0,
+      customerNumber: json['customerNumber'] ?? 0,
     );
 
     return order;
@@ -71,6 +74,7 @@ class Order {
         };
       }).toList(),
       'totalPrice': totalPrice,
+      'customerNumber': customerNumber,
     };
   }
 }

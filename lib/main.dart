@@ -26,10 +26,13 @@ class MyApp extends StatelessWidget {
           ),
           // 亮色主題
           darkTheme: ThemeData(
-              colorScheme: ColorScheme.fromSwatch(
-                  primarySwatch: Colors.teal, brightness: Brightness.dark),
-              visualDensity: VisualDensity.adaptivePlatformDensity,
-              brightness: Brightness.dark),
+            colorScheme: ColorScheme.fromSwatch(
+              primarySwatch: Colors.teal,
+              brightness: Brightness.dark,
+            ),
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+            brightness: Brightness.dark,
+          ),
           // 暗色主題
           themeMode: currentThemeMode,
           // 動態設定主題模式，根據 ValueNotifier 的值
