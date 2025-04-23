@@ -127,6 +127,57 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               itemCount: _orders.length,
               itemBuilder: (context, index) {
                 final order = _orders[index];
+                final body = Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text('訂單編號: ${order.id}',
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                        Text(
+                            '時間: ${DateFormat('yyyy-MM-dd HH:mm').format(order.dateTime)}',
+                            style: TextStyle(fontSize: 14, color: Colors.grey)),
+                        Align(
+                          // 加入 Align 组件，將刪除按鈕靠右對齊
+                          alignment: Alignment.centerRight,
+                          child: IconButton(
+                            // 加入刪除按鈕
+                            icon: Icon(Icons.delete_forever,
+                                color: Colors.redAccent),
+                            onPressed: () {
+                              _deleteOrder(order); // 呼叫刪除訂單函數
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Text('商品:',
+                        style: TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.bold)),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      // 修改商品列表顯示邏輯，移除多餘的 Product.fromJson 解析
+                      children: order.products.map((item) {
+                        // *** 直接使用 item['product']，不再使用 Product.fromJson 解析 ***
+                        final product = item['product']
+                            as Product; // 直接將 item['product'] 強制轉換為 Product 物件
+                        final quantity = item['quantity'] as int;
+                        return Text('- ${product.name} x $quantity');
+                      }).toList(),
+                    ),
+                    SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Text(
+                          '總金額: \$${order.totalPrice.toStringAsFixed(2)}',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                );
                 return Dismissible(
                   // 使用 Dismissible 實現側滑刪除 (可選，如果不需要側滑刪除，可以移除 Dismissible)
                   key: UniqueKey(),
@@ -176,58 +227,26 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                         EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      child: Expanded(
+                        child: IntrinsicHeight(
+                          child: Row(
                             children: [
-                              Text('訂單編號: ${order.id}',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
-                              Text(
-                                  '時間: ${DateFormat('yyyy-MM-dd HH:mm').format(order.dateTime)}',
-                                  style: TextStyle(
-                                      fontSize: 14, color: Colors.grey)),
-                              Align(
-                                // 加入 Align 组件，將刪除按鈕靠右對齊
-                                alignment: Alignment.centerRight,
-                                child: IconButton(
-                                  // 加入刪除按鈕
-                                  icon: Icon(Icons.delete_forever,
-                                      color: Colors.redAccent),
-                                  onPressed: () {
-                                    _deleteOrder(order); // 呼叫刪除訂單函數
-                                  },
+                              Flexible(flex: 5, child: body),
+                              VerticalDivider(),
+                              Flexible(
+                                child: Align(
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    order.customerNumber.toString(),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .displayLarge,
+                                  ),
                                 ),
-                              ),
+                              )
                             ],
                           ),
-                          SizedBox(height: 8),
-                          Text('商品:',
-                              style: TextStyle(
-                                  fontSize: 14, fontWeight: FontWeight.bold)),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            // 修改商品列表顯示邏輯，移除多餘的 Product.fromJson 解析
-                            children: order.products.map((item) {
-                              // *** 直接使用 item['product']，不再使用 Product.fromJson 解析 ***
-                              final product = item['product']
-                                  as Product; // 直接將 item['product'] 強制轉換為 Product 物件
-                              final quantity = item['quantity'] as int;
-                              return Text('- ${product.name} x $quantity');
-                            }).toList(),
-                          ),
-                          SizedBox(height: 8),
-                          Align(
-                            alignment: Alignment.bottomRight,
-                            child: Text(
-                                '總金額: \$${order.totalPrice.toStringAsFixed(2)}',
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.bold)),
-                          ),
-                        ],
+                        ),
                       ),
                     ),
                   ),
