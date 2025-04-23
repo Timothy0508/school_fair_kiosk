@@ -6,7 +6,6 @@ Future<int> showCustomerNumberDialog(BuildContext context) async {
   return result;
 }
 
-//TODO: Consider to use api instead of typing by human.
 class CustomerNumberDialog extends StatefulWidget {
   const CustomerNumberDialog({super.key});
 
