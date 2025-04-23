@@ -416,7 +416,6 @@ class _CashierScreenState extends State<CashierScreen> {
                           debugPrint(customerNumber.toString());
                           _confirmOrder(customerNumber);
                         },
-                        //TODO: Add dialog to add customer's number.
                       ),
                     ],
                   ),
