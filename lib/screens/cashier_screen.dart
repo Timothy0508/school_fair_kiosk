@@ -8,6 +8,7 @@ import '../models/order.dart';
 import '../models/product.dart';
 import '../widgets/action_buttons.dart';
 import '../widgets/cart_list.dart';
+import '../widgets/customer_number_dialog.dart';
 import '../widgets/notification_helper.dart';
 import '../widgets/notification_type.dart';
 import '../widgets/product_list.dart';
@@ -81,7 +82,7 @@ class _CashierScreenState extends State<CashierScreen> {
     }
   }
 
-  void _confirmOrder() async {
+  void _confirmOrder(int? customerNumber) async {
     if (_cartItems.isEmpty) {
       showPopupNotification(context, '購物車內沒有商品，無法確認訂單。',
           type: NotificationType.warning); // 使用 showPopupNotification 顯示提示訊息
@@ -116,6 +117,7 @@ class _CashierScreenState extends State<CashierScreen> {
       dateTime: DateTime.now(),
       products: consolidatedProducts, // 使用合併後的商品列表
       totalPrice: _totalPrice,
+      customerNumber: customerNumber ?? 0,
     );
 
     final prefs = await SharedPreferences.getInstance();
@@ -408,7 +410,13 @@ class _CashierScreenState extends State<CashierScreen> {
                       SizedBox(height: 20),
                       ActionButtons(
                         onClearCart: _clearCart,
-                        onConfirmOrder: _confirmOrder,
+                        onConfirmOrder: () async {
+                          int customerNumber =
+                              await showCustomerNumberDialog(context);
+                          debugPrint(customerNumber.toString());
+                          _confirmOrder(customerNumber);
+                        },
+                        //TODO: Add dialog to add customer's number.
                       ),
                     ],
                   ),
