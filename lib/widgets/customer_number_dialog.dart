@@ -21,15 +21,15 @@ class _CustomerNumberDialogState extends State<CustomerNumberDialog> {
   Widget build(BuildContext context) {
     var numberInput = TextField(
       controller: _numberController,
+      decoration: InputDecoration(
+        hintText: "Customer's number",
+        border: OutlineInputBorder(),
+      ),
     );
 
     var dialog = AlertDialog(
       content: numberInput,
       actions: [
-        OutlinedButton(
-          onPressed: () => Navigator.pop(context, 0),
-          child: Text('cancel'),
-        ),
         FilledButton(
             onPressed: () => Navigator.pop(
                   context,
