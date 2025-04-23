@@ -1,0 +1,26 @@
+display_name: School Fair Cashier
+package_name: school-fair-kiosk
+maintainer:
+  name: HammeredSheep
+  email: timothytseng508@gmail.com
+priority: optional
+section: x11
+installed_size: 6604
+essential: false
+icon: snap/gui/school-fair-kiosk.png
+
+postinstall_scripts:
+  - echo "Successfully installed"
+postuninstall_scripts:
+  - echo "Successfully uninstalled"
+
+keywords:
+  - SchoolFairKiosk
+  - Application
+
+generic_name: Productivity Application
+
+categories:
+  - Productivity
+
+startup_notify: true
