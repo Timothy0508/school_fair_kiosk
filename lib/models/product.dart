@@ -4,6 +4,7 @@ enum ProductCategory {
   drink, // 飲品
   food, // 熟食
   ice, // 冰品
+  coupon, //折價
 }
 
 extension ProductCategoryExtension on ProductCategory {
@@ -15,8 +16,8 @@ extension ProductCategoryExtension on ProductCategory {
         return '熟食';
       case ProductCategory.ice:
         return '冰品';
-      default:
-        return '未分類';
+      case ProductCategory.coupon:
+        return '折價券';
     }
   }
 
@@ -28,8 +29,8 @@ extension ProductCategoryExtension on ProductCategory {
         return Icons.fastfood; // 熟食 Icon
       case ProductCategory.ice:
         return Icons.icecream; // 冰品 Icon
-      default:
-        return Icons.category;
+      case ProductCategory.coupon:
+        return Icons.discount;
     }
   }
 }

@@ -192,7 +192,9 @@ class _CashierScreenState extends State<CashierScreen> {
                     _products.add(Product(
                         id: DateTime.now().millisecondsSinceEpoch.toString(),
                         name: name,
-                        price: price,
+                        price: selectedCategory == ProductCategory.coupon
+                            ? -price
+                            : price,
                         category: selectedCategory // 傳遞選取的分類
                         ));
                     _saveProducts();
