@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=School Fair Kiosk
+Comment=The app for cashiers to use at the school fair
+Exec=school-fair-kiosk
+Icon=${SNAP}/meta/gui/school-fair-kiosk.png # Replace name with your app name.
+Terminal=false
+Type=Application
+Categories=Productivity; # Adjust accordingly your snap category.
